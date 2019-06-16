@@ -1,5 +1,5 @@
 import React from 'react';
-import axios from 'axios';
+import API from './utils/API'; 
 
 class AddProduct extends React.Component {
 
@@ -29,25 +29,22 @@ class AddProduct extends React.Component {
 	}
 
 
-	handleSubmit = event => {
+	handleSubmit = async event => {
 		event.preventDefault();
 
 		const { name, condition, slug, excerpt, description, official_url, specification, options, images } = this.state;
 
 
-		var headers = {
-            'Content-Type': 'application/json'
-        }
-
-
-		axios.post(`http://ac1e58f0.ngrok.io/api/products`, { name, condition, slug, excerpt, description, official_url, specification, options, images })
-		.then(res => {
+		try { 
+			const res = await API.post(`/products`, { 
+				name, condition, slug, excerpt, description, official_url, specification, options, images 
+			})
 			console.log(res);
-			console.log(res.data);
-		}) 
-		.catch(error => {
-		    console.log(error.response.data)
-		});
+		}
+		catch(e) {
+			console.log(`product cration faild: ${e}`);
+		}
+
 	}
 
 	render(){
@@ -56,31 +53,31 @@ class AddProduct extends React.Component {
 			<div>
 				<h1>Add Product</h1>
 				<form onSubmit={this.handleSubmit}>
-					<label>
-						Product Title:
-						<input type="text" name="name" value={name} onChange={this.handleChange} />
-					</label>
-					<label>
-						Product Slug:
-						<input type="text" name="slug" value={slug} onChange={this.handleChange} />
-					</label>
-					<label>
-						Product Description:
-						<input type="text" name="description" value={description} onChange={this.handleChange} />
-					</label>
-					<label>
-						Product Excerpt:
-						<input type="text" name="excerpt" value={excerpt} onChange={this.handleChange} />
-					</label>
-					<label>
-						Product Condition:
-						<input type="text" name="condition" value={condition} onChange={this.handleChange} />
-					</label>
-					<label>
-						Product Url:
-						<input type="text" name="official_url" value={official_url} onChange={this.handleChange} />
-					</label>
-					<button type="submit">Add Product</button>
+					<div className="form-group">
+						<label>Product Title:</label>
+						<input type="text" className="form-control" name="name" value={name} onChange={this.handleChange} />
+					</div>
+					<div className="form-group">
+						<label>Product Slug:</label>
+						<input type="text" className="form-control" name="slug" value={slug} onChange={this.handleChange} />
+					</div>
+					<div className="form-group">
+						<label>Product Description:</label>
+						<textarea rows="5" className="form-control" name="description" value={description} onChange={this.handleChange}></textarea>
+					</div>
+					<div className="form-group">
+						<label>Product Excerpt:</label>
+						<textarea rows="4" className="form-control" name="excerpt" value={excerpt} onChange={this.handleChange}></textarea>
+					</div>
+					<div className="form-group">
+						<label>Product Condition:</label>
+						<input type="text" className="form-control" name="condition" value={condition} onChange={this.handleChange} />
+					</div>
+					<div className="form-group">
+						<label>Product Url:</label>
+						<input type="text" className="form-control" name="official_url" value={official_url} onChange={this.handleChange} />
+					</div>
+					<button type="submit" className="btn btn-secondary">Add Product</button>
 				</form>
 			</div>
 		)

@@ -1,5 +1,5 @@
 import React from 'react';
-import axios from 'axios';
+import API from './utils/API'; 
 
 class Products extends React.Component {
 
@@ -7,21 +7,36 @@ class Products extends React.Component {
 		products: []
 	}
 
-	deleteProduct = slug => {
-		axios.delete(`http://ac1e58f0.ngrok.io/api/products/${slug}`)
-	    .then(res => {
-	        console.log(res);
-	        console.log(res.data);
-	    })
+
+	async componentDidMount() {
+		try {
+			let productsData = await API.get(`/products`)
+			productsData = productsData.data.data;
+			const products = productsData;
+			this.setState({ products })
+		} catch(e) {
+			console.log(`Axios request faild:${e}`);
+		}
+		
 	}
 
-	componentDidMount() {
-		axios.get(`http://ac1e58f0.ngrok.io/api/products`)
-		.then(res => {
-			const products = res.data.data;
-			this.setState({ products })
-			console.log(products);
-		})
+	deleteProduct = async slug => {
+		const signal = AbortController.signal
+		try {
+			const response = await API.delete(`/products/${slug}`, { signal: signal })
+			const products = this.state.products.filter(p => p.slug !== slug);
+    		this.setState({ products });
+
+			console.log(response);
+	        console.log(response.data);
+		} catch(e) {
+			console.log(`Delete faild:${e}`);
+		}
+
+		return function cleanup() {
+			AbortController.abort()
+		}
+
 	}
 
 	render() {
